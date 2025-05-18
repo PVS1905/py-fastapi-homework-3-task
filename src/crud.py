@@ -53,6 +53,9 @@ async def activate_token(activation_token: str, email: str, db: AsyncSession):
     user_result = await db.execute(user_query)
     user = user_result.scalar_one_or_none()
 
+    if not user:
+        return "invalid_token"
+
     if user.is_active:
         return "already_active"
 
@@ -108,7 +111,7 @@ async def password_reset(email, db: AsyncSession):
 
 async def password_reset_complete(email, token, password, db: AsyncSession):
     try:
-        user_query = select(UserModel).where(UserModel.email == email, UserModel.is_active)
+        user_query = select(UserModel).where(UserModel.email == email, UserModel.is_active.is_(True))
         user_result = await db.execute(user_query)
         user = user_result.scalar_one_or_none()
         if not user:

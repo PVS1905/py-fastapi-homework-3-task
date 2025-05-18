@@ -46,7 +46,7 @@ class UserLoginResponseSchema(BaseModel):
     email: str
     group_id: int
 
-    class ConfigDict:
+    class Config:
         from_attributes = True
 
 

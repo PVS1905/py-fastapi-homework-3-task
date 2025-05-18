@@ -101,12 +101,7 @@ async def activate_user(user_data: UserActivationRequestSchema, db: AsyncSession
 
 @router.post("/password-reset/request/")
 async def reset_password(request_body: PasswordResetRequestSchema, db: AsyncSession = Depends(get_db)):
-    token_valid = await password_reset(email=request_body.email, db=db)
-    if not token_valid:
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "If you are registered, you will receive an email with instructions."}
-        )
+    await password_reset(email=request_body.email, db=db)
     return {
         "message": "If you are registered, you will receive an email with instructions."
     }
@@ -117,18 +112,13 @@ async def reset_password_complete(
         request_body: PasswordResetCompleteRequestSchema,
         db: AsyncSession = Depends(get_db)
 ):
-    success = await password_reset_complete(
+    await password_reset_complete(
         email=request_body.email,
         token=request_body.token,
         password=request_body.password,
         db=db
     )
 
-    if not success:
-        raise HTTPException(
-            status_code=400,
-            detail="If you are registered, you will receive an email with instructions."
-        )
     return {"message": "Password reset successfully."}
 
 
